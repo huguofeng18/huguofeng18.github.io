@@ -1,247 +1,1536 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <title>个人主页</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <style>
-    body{background:#f7f8fa;font-family:'Segoe UI',Tahoma,sans-serif;}
-    h1{color:#2d3240;text-align:center;margin-top:2.5rem;margin-bottom:1.5rem;}
-    .search-box{margin:auto;width:max-content;margin-top:2rem;}
-    input,select{height:2.5rem;font-size:16px;border-radius:1.2rem;padding:0 1rem;border:1px solid #ccc;}
-    input[type="text"]{width:14rem;}
-    input[type="submit"]{width:5rem;background:#38a1db;color:#fff;border:none;margin-left:.5rem;cursor:pointer;}
-    select{margin-right:1rem;}
-    /* 悬浮按钮 & 弹窗 */
-    .fab {
-      position:fixed;background:#38a1db;color:#fff;border:none;width:56px;height:56px;border-radius:50%;box-shadow:0 2px 8px #0002;cursor:pointer;z-index:20;display:flex;align-items:center;justify-content:center;font-size:1.9rem;transition:box-shadow .2s;
-    }
-    .fab:hover{box-shadow: 0 5px 16px #0004;}
-    .fab-calendar{right:24px;bottom:32px;}
-    .fab-account{right:24px;top:32px;}
-    .modal {
-      position:fixed;right:90px;bottom:90px;width:350px;max-width:93vw;
-      background:#fff;box-shadow:0 2px 12px #3334;border-radius:16px;z-index:100;text-align:left;padding:0 22px 18px 22px;display:none;animation:modalShow .2s;
-    }
-    .modal-account{right:90px;top:90px;bottom:auto;}
-    .modal-header{
-      padding:1rem 0 .8rem 0;font-size:20px;font-weight:bold;color:#2d3240;display:flex;justify-content:space-between;align-items:center;
-    }
-    .modal-close{font-size:22px;cursor:pointer;font-weight:normal;color:#888;}
-    @keyframes modalShow{from{transform:scale(.8);opacity:0;}to{transform:scale(1);opacity:1;}}
-    /* 记账本内容 */
-    #account-form{display:flex;gap:8px;margin-bottom:10px;}
-    #account-form input[type="number"]{width:70px;}
-    #account-form input[type="text"]{width:100px;}
-    #account-form button{padding:0 12px;}
-    #account-list{padding:0;list-style:none;}
-    #account-list li{margin:6px 0;padding:4px 0;font-size:15px;display:flex;align-items:center;justify-content:space-between;}
-    #account-list button{background:#e74c3c;color:#fff;border:none;border-radius:7px;padding:1px 10px;font-size:14px;cursor:pointer;}
-    #total{margin:7px 0 4px 0;color:#222;}
-    /* 日历样式 */
-    #calendar table{width:100%;font-size:15px;text-align:center;border-collapse:collapse;}
-    #calendar th{color:#555;}
-    #calendar td{padding:6px 0;border-radius:6px;cursor:pointer;transition:background .15s;}
-    #calendar td.today{background:#1E90FF1A;color:#1957a4;font-weight:bold;}
-    #calendar td:hover{background:#38a1db16;}
-    .calendar-controls{display:flex;justify-content:space-between;align-items:center;margin:7px 0;}
-    /* 天气简洁样式 */
-    .weather-bar {height:34px;line-height:34px;padding:0 13px;background:#38a1db;color:#fff;border-radius:16px;display:inline-block;font-size:16px;margin-bottom:.8rem;margin-left:auto;margin-right:auto;}
-    .weather-bar small{font-size:13px;opacity:.7;}
-    .weather-bar .temp{font-weight:bold;padding:0 .3em;}
-    @media (max-width:600px){
-      h1{margin-top:1rem;}
-      .modal,.modal-account{width:97vw;right:2vw;}
-      .fab-account{right:18px !important;}
-      .fab-calendar{right:18px !important;}
-      .modal{padding:0 .9em 1em .9em;}
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>教务管理系统 - 学生信息管理</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> 
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .real-time-clock {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 0.9rem;
+    color: white;
+    background-color: rgba(255, 255, 255, 0.2);
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    margin-right: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 100px;
+    text-align: center;
+}   
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.2rem;
+  color: white;
+  overflow: hidden;
+  object-fit: cover;
+}
+.student-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #b2bec3;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  color: #fff;
+  margin-right: 8px;
+  object-fit: cover;
+  vertical-align: middle;
+}
+.real-time-clock {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 0.9rem;
+    color: white;
+    background-color: rgba(255, 255, 255, 0.2);
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    margin-right: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 100px;
+    text-align: center;
+}
+
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #34495e;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+ 
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        body.dark-mode  .fas.fa-calendar-alt  {
+        color: #ffffff; /* 深色模式下图标为白色 */
+        }
+
+        body.dark-mode  .real-time-clock {
+        background-color: rgba(0, 0, 0, 0.2); /* 深色模式下背景为浅灰色 */
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--primary), var(--dark));
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .real-time-clock-wrapper {
+
+        display: flex; /*display: flex; 将容器设置为弹性盒子布局，使得子元素可以水平排列*/
+        align-items: center; /* 垂直居中 ,align-items: center; 确保日历图标和日期在垂直方向上对齐*/
+
+        }
+
+       .real-time-clock-wrapper .fas.fa-calendar-alt {
+
+       margin-right: 5px; /* 在图标和时钟之间添加一些空间 */
+       font-size: 1.4em; /* 可以调整图标大小 */
+
+       }
+ 
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+ 
+        .logo i {
+            font-size: 1.8rem;
+            color: var(--secondary);
+        }
+ 
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+ 
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+ 
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+ 
+        .nav {
+            background-color: var(--dark);
+            padding: 0.8rem 2rem;
+            display: flex;
+            gap: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+ 
+        .nav a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+        }
+ 
+        .nav a:hover, .nav a.active  {
+            background-color: var(--secondary);
+        }
+ 
+        .nav a i {
+            font-size: 1.1rem;
+        }
+ 
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: 1fr 3fr;
+            gap: 2rem;
+        }
+ 
+        .sidebar {
+            background-color: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            height: fit-content;
+        }
+ 
+        .sidebar h3 {
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 2px solid var(--light);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+ 
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+ 
+        .stat-card {
+            background-color: var(--light);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+        }
+ 
+        .stat-card i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+ 
+        .stat-card.blue  i { color: var(--secondary); }
+        .stat-card.green  i { color: var(--success); }
+        .stat-card.orange  i { color: var(--warning); }
+        .stat-card.red  i { color: var(--accent); }
+ 
+        .stat-card h4 {
+            font-size: 1.5rem;
+            margin-bottom: 0.3rem;
+        }
+ 
+        .quick-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+ 
+        .action-btn {
+            background-color: var(--light);
+            border: none;
+            padding: 0.8rem;
+            border-radius: 6px;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+ 
+        .action-btn:hover {
+            background-color: var(--secondary);
+            color: white;
+        }
+ 
+        .action-btn i {
+            font-size: 1.2rem;
+        }
+ 
+        .main-content {
+            background-color: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+        }
+ 
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+ 
+        .content-header h2 {
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+ 
+        .btn {
+            padding: 0.7rem 1.5rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+        }
+ 
+        .btn-primary {
+            background-color: var(--secondary);
+            color: white;
+        }
+ 
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+ 
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+ 
+        .btn-danger {
+            background-color: var(--accent);
+            color: white;
+        }
+ 
+        .search-bar {
+            display: flex;
+            margin-bottom: 1.5rem;
+            gap: 10px;
+        }
+ 
+        .search-bar input {
+            flex: 1;
+            padding: 0.8rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+ 
+        .search-bar button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 0 1.5rem;
+            cursor: pointer;
+        }
+ 
+        .table-container {
+            overflow-x: auto;
+        }
+ 
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+ 
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+ 
+        th {
+            background-color: #f8f9fa;
+            color: var(--primary);
+            font-weight: 600;
+        }
+ 
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+ 
+        .actions {
+            display: flex;
+            gap: 8px;
+        }
+ 
+        .action-icon {
+            padding: 0.5rem;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+ 
+        .action-icon.edit  {
+            color: var(--warning);
+            background-color: rgba(243, 156, 18, 0.1);
+        }
+ 
+        .action-icon.edit:hover  {
+            background-color: rgba(243, 156, 18, 0.2);
+        }
+ 
+        .action-icon.delete  {
+            color: var(--accent);
+            background-color: rgba(231, 76, 60, 0.1);
+        }
+ 
+        .action-icon.delete:hover  {
+            background-color: rgba(231, 76, 60, 0.2);
+        }
+ 
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+ 
+        .modal-content {
+            background-color: white;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 500px;
+            padding: 2rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+ 
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+ 
+        .modal-header h3 {
+            color: var(--primary);
+        }
+ 
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #777;
+        }
+ 
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+ 
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--dark);
+        }
+ 
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+ 
+        .form-row {
+            display: flex;
+            gap: 1rem;
+        }
+ 
+        .form-row .form-group {
+            flex: 1;
+        }
+ 
+        .form-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+ 
+        .footer {
+            text-align: center;
+            padding: 1.5rem;
+            color: #777;
+            border-top: 1px solid #eee;
+            margin-top: 2rem;
+        }
+ 
+        /* 内容区域样式 */
+        .content-section {
+            display: none;
+        }
+        
+        .content-section.active  {
+            display: block;
+        }
+        
+        /* 首页欢迎区域 */
+        .welcome-section {
+            text-align: center;
+            padding: 3rem 0;
+        }
+        
+        .welcome-section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+        
+        .welcome-section p {
+            font-size: 1.2rem;
+            color: #666;
+            max-width: 800px;
+            margin: 0 auto 2rem;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .feature-card {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            min-height: 220px; /* 统一卡片高度 */
+        }
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15); /* 增强悬停阴影 */
+            background: #f8f9fa; /* 添加背景色变化 */
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .feature-card i {
+            font-size: 2.5rem;
+            color: var(--secondary);
+            margin-bottom: 1rem;
+        }
+        
+        .feature-card h3 {
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+        
+        /* 课程管理表格样式 */
+        .courses-table th:nth-child(1), .courses-table td:nth-child(1) { width: 10%; }
+        .courses-table th:nth-child(2), .courses-table td:nth-child(2) { width: 20%; }
+        .courses-table th:nth-child(3), .courses-table td:nth-child(3) { width: 15%; }
+        .courses-table th:nth-child(4), .courses-table td:nth-child(4) { width: 15%; }
+        .courses-table th:nth-child(5), .courses-table td:nth-child(5) { width: 10%; }
+        .courses-table th:nth-child(6), .courses-table td:nth-child(6) { width: 10%; }
+        
+        /* 成绩管理表格样式 */
+        .grades-table th:nth-child(1), .grades-table td:nth-child(1) { width: 10%; }
+        .grades-table th:nth-child(2), .grades-table td:nth-child(2) { width: 20%; }
+        .grades-table th:nth-child(3), .grades-table td:nth-child(3) { width: 20%; }
+        .grades-table th:nth-child(4), .grades-table td:nth-child(4) { width: 15%; }
+        .grades-table th:nth-child(5), .grades-table td:nth-child(5) { width: 10%; }
+        
+        /* 课程安排日历样式 */
+        .calendar {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 2rem;
+        }
+        
+        .calendar th, .calendar td {
+            border: 1px solid #ddd;
+            padding: 1rem;
+            text-align: center;
+        }
+        
+        .calendar th {
+            background-color: var(--light);
+            font-weight: 600;
+        }
+        
+        .calendar td {
+            height: 100px;
+            vertical-align: top;
+        }
+        
+        .calendar-day {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        
+        .calendar-event {
+            background-color: var(--secondary);
+            color: white;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-bottom: 0.3rem;
+            display: block;
+        }
+        
+        /* 系统设置表单样式 */
+        .settings-form {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .settings-group {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+        }
+        
+        .settings-group h3 {
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 2px solid var(--light);
+            color: var(--primary);
+        }
+ 
+        /* 交互增强样式 */
+        .feature-card:hover .card-hover-underline {
+            transform: scaleX(1);
+        }
+        /* 快速入门模态框 */
+        .guide-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1001;
+            justify-content: center;
+            align-items: center;
+        }
+        .guide-modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            max-width: 600px;
+            width: 90%;
+            position: relative;
+        }
+        .guide-modal h3 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+        .guide-modal ol {
+            padding-left: 1.5rem;
+            line-height: 1.8;
+        }
+        /* 响应式设计 */
+        @media (max-width: 992px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                order: 2;
+            }
+        }
+ 
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+            
+            .nav {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .content-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+            
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+            
+            .features {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
-  <h1>我的智能主页</h1>
-  <div id="weatherbar" class="weather-bar">天气加载中...</div>
-  <div class="search-box">
-      <form id="searchForm" target="_blank">
-          <select id="engineSelect">
-              <option value="quark">夸克</option>
-              <option value="google">谷歌</option>
-              <option value="baidu">百度</option>
-          </select>
-          <input type="text" id="keyword" placeholder="输入关键词..." required>
-          <input type="submit" value="搜索">
-      </form>
-  </div>
-
-  <!-- 悬浮按钮 -->
-  <button class="fab fab-calendar" title="打开日历" onclick="openModal('calendar')">📅</button>
-  <button class="fab fab-account" title="打开记账本" onclick="openModal('account')">💰</button>
-
-  <!-- 日历弹窗 -->
-  <div id="modal-calendar" class="modal">
-    <div class="modal-header">本月日历 <span class="modal-close" onclick="closeModal('calendar')">&times;</span></div>
-    <div class="calendar-controls">
-      <button onclick="changeMonth(-1)" style="font-size:18px;">&#8592;</button>
-      <span id="calendar-title"></span>
-      <button onclick="changeMonth(1)" style="font-size:18px;">&#8594;</button>
+    <!-- 顶部导航栏 -->
+    <header class="header">
+        <div class="logo">
+            <i class="fas fa-graduation-cap"></i>
+            <h1>教务管理系统</h1>
+        </div>
+        <div class="user-info">
+            <div class="real-time-clock-wrapper">
+            <i class="fas fa-calendar-alt"></i>
+            <div class="real-time-clock" id="realTimeClock"></div>
+            <div class="user-avatar">马</div>
+            <span>管理员：马毓涛</span>
+        </div>
+    </header>
+ 
+    <!-- 主导航 -->
+    <nav class="nav">
+        <a href="#" data-section="home"><i class="fas fa-home"></i> 首页</a>
+        <a href="#" data-section="students" class="active"><i class="fas fa-user-graduate"></i> 学生管理</a>
+        <a href="#" data-section="courses"><i class="fas fa-book"></i> 课程管理</a>
+        <a href="#" data-section="grades"><i class="fas fa-chart-bar"></i> 成绩管理</a>
+        <a href="#" data-section="schedule"><i class="fas fa-calendar-alt"></i> 课程安排</a>
+        <a href="#" data-section="settings"><i class="fas fa-cog"></i> 系统设置</a>
+        
+    </nav>
+ 
+    <!-- 主内容区 -->
+    <div class="container">
+        <!-- 侧边栏 -->
+        <div class="sidebar">
+            <h3><i class="fas fa-chart-pie"></i> 系统概览</h3>
+            <div class="stats">
+                <div class="stat-card blue">
+                    <i class="fas fa-users"></i>
+                    <h4>1,248</h4>
+                    <p>学生总数</p>
+                </div>
+                <div class="stat-card green">
+                    <i class="fas fa-book-open"></i>
+                    <h4>86</h4>
+                    <p>课程总数</p>
+                </div>
+                <div class="stat-card orange">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                    <h4>64</h4>
+                    <p>教师总数</p>
+                </div>
+                <div class="stat-card red">
+                    <i class="fas fa-building"></i>
+                    <h4>12</h4>
+                    <p>院系数量</p>
+                </div>
+            </div>
+ 
+            <h3><i class="fas fa-bolt"></i> 快捷操作</h3>
+            <div class="quick-actions">
+                <button class="action-btn" id="addStudentBtn">
+                    <i class="fas fa-plus"></i> 添加学生
+                </button>
+                <button class="action-btn">
+                    <i class="fas fa-file-export"></i> 导出数据 
+                </button>
+                <button class="action-btn">
+                    <i class="fas fa-print"></i> 打印报表 
+                </button>
+                <button class="action-btn">
+                    <i class="fas fa-sync-alt"></i> 刷新数据
+                </button>
+            </div>
+        </div>
+ 
+        <!-- 主要内容区域 -->
+        <div class="main-content">
+            <!-- 首页内容 -->
+            <div class="content-section active" id="home-section">
+                <div class="welcome-section">
+                    <h2>欢迎使用教务管理系统</h2>
+                    <p>高效、便捷的教务管理平台，帮助您轻松管理学生信息、课程安排、成绩统计等教务工作。</p>
+                    <button class="btn btn-primary" id="openGuideModal">
+                        <i class="fas fa-play-circle"></i> 快速入门指南 
+                    </button>
+                </div>
+                
+                <div class="features">
+                    <div class="feature-card" data-section="students-section" style="cursor: pointer;">
+                        <i class="fas fa-user-graduate"></i>
+                        <h3>学生管理</h3>
+                        <p>支持学生信息的增删改查、批量导入导出Excel，自动生成学号和电子档案，支持按院系/班级快速筛选。</p>
+                        <div class="card-hover-underline" style="height: 2px; background: var(--secondary); margin-top: 1rem; transform: scaleX(0); transition: transform 0.3s ease;"></div>
+                    </div>
+                    <div class="feature-card" data-section="courses-section" style="cursor: pointer;">
+                        <i class="fas fa-book"></i>
+                        <h3>课程管理</h3>
+                        <p>可视化课程表编排，自动检测教室/教师时间冲突，支持课程时间调整提醒和历史版本回溯。</p>
+                        <div class="card-hover-underline" style="height: 2px; background: var(--secondary); margin-top: 1rem; transform: scaleX(0); transition: transform 0.3s ease;"></div>
+                    </div>
+                    <div class="feature-card" data-section="grades-section" style="cursor: pointer;">
+                        <i class="fas fa-chart-line"></i>
+                        <h3>成绩分析</h3>
+                        <p>支持平时分/考试分多维度记录，自动计算GPA和班级排名，提供成绩趋势图和薄弱知识点分析。</p>
+                        <div class="card-hover-underline" style="height: 2px; background: var(--secondary); margin-top: 1rem; transform: scaleX(0); transition: transform 0.3s ease;"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 学生管理内容 -->
+            <div class="content-section" id="students-section">
+                <div class="content-header">
+                    <h2><i class="fas fa-user-graduate"></i> 学生信息管理</h2>
+                    <button class="btn btn-primary" id="openAddModal">
+                        <i class="fas fa-plus"></i> 添加学生
+                    </button>
+                </div>
+ 
+                <div class="search-bar">
+                    <input type="text" id="searchInput" placeholder="输入学生姓名、学号或专业搜索...">
+                    <button><i class="fas fa-search"></i></button>
+                </div>
+ 
+                <div class="table-container">
+                    <table id="studentsTable">
+                        <thead>
+                            <tr>
+                                <th>学号</th>
+                                <th>姓名</th>
+                                <th>性别</th>
+                                <th>年龄</th>
+                                <th>专业</th>
+                                <th>班级</th>
+                                <th>联系电话</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="studentsTableBody">
+                            <!-- 学生数据将通过JavaScript动态生成 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- 课程管理内容 -->
+            <div class="content-section" id="courses-section">
+                <div class="content-header">
+                    <h2><i class="fas fa-book"></i> 课程管理</h2>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-plus"></i> 添加课程
+                    </button>
+                </div>
+ 
+                <div class="search-bar">
+                    <input type="text" placeholder="输入课程名称或代码搜索...">
+                    <button><i class="fas fa-search"></i></button>
+                </div>
+ 
+                <div class="table-container">
+                    <table class="courses-table">
+                        <thead>
+                            <tr>
+                                <th>课程代码</th>
+                                <th>课程名称</th>
+                                <th>授课教师</th>
+                                <th>学分</th>
+                                <th>学时</th>
+                                <th>状态</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>CS101</td>
+                                <td>计算机科学导论</td>
+                                <td>张教授</td>
+                                <td>3</td>
+                                <td>48</td>
+                                <td><span class="badge" style="background-color: #2ecc71; color: white; padding: 0.3rem 0.6rem; border-radius: 20px;">进行中</span></td>
+                                <td class="actions">
+                                    <div class="action-icon edit">
+                                        <i class="fas fa-edit"></i>
+                                    </div>
+                                    <div class="action-icon delete">
+                                        <i class="fas fa-trash"></i>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>MA202</td>
+                                <td>高等数学</td>
+                                <td>李教授</td>
+                                <td>4</td>
+                                <td>64</td>
+                                <td><span class="badge" style="background-color: #2ecc71; color: white; padding: 0.3rem 0.6rem; border-radius: 20px;">进行中</span></td>
+                                <td class="actions">
+                                    <div class="action-icon edit">
+                                        <i class="fas fa-edit"></i>
+                                    </div>
+                                    <div class="action-icon delete">
+                                        <i class="fas fa-trash"></i>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>EN301</td>
+                                <td>专业英语</td>
+                                <td>王老师</td>
+                                <td>2</td>
+                                <td>32</td>
+                                <td><span class="badge" style="background-color: #f39c12; color: white; padding: 0.3rem 0.6rem; border-radius: 20px;">未开始</span></td>
+                                <td class="actions">
+                                    <div class="action-icon edit">
+                                        <i class="fas fa-edit"></i>
+                                    </div>
+                                    <div class="action-icon delete">
+                                        <i class="fas fa-trash"></i>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- 成绩管理内容 -->
+            <div class="content-section" id="grades-section">
+                <div class="content-header">
+                    <h2><i class="fas fa-chart-bar"></i> 成绩管理</h2>
+                    <div>
+                        <button class="btn btn-primary">
+                            <i class="fas fa-plus"></i> 录入成绩 
+                        </button>
+                        <button class="btn btn-success">
+                            <i class="fas fa-chart-pie"></i> 成绩分析
+                        </button>
+                    </div>
+                </div>
+ 
+                <div class="search-bar">
+                    <input type="text" placeholder="输入学生姓名或学号搜索...">
+                    <button><i class="fas fa-search"></i></button>
+                </div>
+ 
+                <div class="table-container">
+                    <table class="grades-table">
+                        <thead>
+                            <tr>
+                                <th>学号</th>
+                                <th>姓名</th>
+                                <th>课程名称</th>
+                                <th>成绩</th>
+                                <th>学分</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>20230001</td>
+                                <td>张三</td>
+                                <td>计算机科学导论</td>
+                                <td>85</td>
+                                <td>3</td>
+                                <td class="actions">
+                                    <div class="action-icon edit">
+                                        <i class="fas fa-edit"></i>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>20230001</td>
+                                <td>张三</td>
+                                <td>高等数学</td>
+                                <td>78</td>
+                                <td>4</td>
+                                <td class="actions">
+                                    <div class="action-icon edit">
+                                        <i class="fas fa-edit"></i>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>20230002</td>
+                                <td>李四</td>
+                                <td>计算机科学导论</td>
+                                <td>92</td>
+                                <td>3</td>
+                                <td class="actions">
+                                    <div class="action-icon edit">
+                                        <i class="fas fa-edit"></i>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- 课程安排内容 -->
+            <div class="content-section" id="schedule-section">
+                <div class="content-header">
+                    <h2><i class="fas fa-calendar-alt"></i> 课程安排</h2>
+                    <div>
+                        <button class="btn btn-primary">
+                            <i class="fas fa-plus"></i> 添加课程 
+                        </button>
+                        <button class="btn btn-success">
+                            <i class="fas fa-print"></i> 打印课表 
+                        </button>
+                    </div>
+                </div>
+ 
+                <div class="search-bar">
+                    <select style="padding: 0.8rem; border: 1px solid #ddd; border-radius: 6px;">
+                        <option>2024-2025学年 第一学期</option>
+                        <option>2025-2026学年 第二学期</option>
+                        <option>2024-2025学年 第一学期</option>
+                        <option>2025-2026学年 第二学期</option>
+                    </select>
+                    <select style="padding: 0.8rem; border: 1px solid #ddd; border-radius: 6px;">
+                        <option>计算机科学2024级1班</option>
+                        <option>计算机科学2024级2班</option>
+                        <option>软件工程2024级1班</option>
+                        <option>软件工程2024级2班</option>
+                    </select>
+                </div>
+ 
+                <div class="table-container">
+                    <table class="calendar">
+                        <thead>
+                            <tr>
+                                <th>时间</th>
+                                <th>星期一</th>
+                                <th>星期二</th>
+                                <th>星期三</th>
+                                <th>星期四</th>
+                                <th>星期五</th>
+                                <th>星期六</th>
+                                <th>星期日</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>08:00-09:40</td>
+                                <td>
+                                    <div class="calendar-event">高等数学<br>李教授<br>教学楼201</div>
+                                </td>
+                                <td></td>
+                                <td>
+                                    <div class="calendar-event">计算机科学导论<br>张教授<br>实验楼302</div>
+                                </td>
+                                <td></td>
+                                <td>
+                                    <div class="calendar-event">高等数学<br>李教授<br>教学楼201</div>
+                                </td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10:00-11:40</td>
+                                <td></td>
+                                <td>
+                                    <div class="calendar-event">数据结构<br>王教授<br>实验楼305</div>
+                                </td>
+                                <td></td>
+                                <td>
+                                    <div class="calendar-event">数据结构<br>王教授<br>实验楼305</div>
+                                </td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>14:00-15:40</td>
+                                <td>
+                                    <div class="calendar-event">专业英语<br>赵老师<br>教学楼105</div>
+                                </td>
+                                <td></td>
+                                <td>
+                                    <div class="calendar-event">体育<br>钱老师<br>操场</div>
+                                </td>
+                                <td></td>
+                                <td>
+                                    <div class="calendar-event">专业英语<br>赵老师<br>教学楼105</div>
+                                </td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>16:00-17:40</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- 系统设置内容 -->
+            <div class="content-section" id="settings-section">
+                <div class="content-header">
+                    <h2><i class="fas fa-cog"></i> 系统设置</h2>
+                </div>
+                
+                <div class="settings-form">
+                    <div class="settings-group">
+                        <h3>个人信息设置</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="admin-name">姓名</label>
+                                <input type="text" id="admin-name" value="马老师">
+                            </div>
+                            <div class="form-group">
+                                <label for="admin-contact">联系方式</label>
+                                <input type="text" id="admin-contact" value="13800138000">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="admin-email">电子邮箱</label>
+                            <input type="email" id="admin-email" value="admin@school.edu"> 
+                        </div>
+                    </div>
+                    
+                    <div class="settings-group">
+                        <h3>账户安全</h3>
+                        <div class="form-group">
+                            <label for="current-password">当前密码</label>
+                            <input type="password" id="current-password">
+                        </div>
+                        <div class="form-group">
+                            <label for="new-password">新密码</label>
+                            <input type="password" id="new-password">
+                        </div>
+                        <div class="form-group">
+                            <label for="confirm-password">确认新密码</label>
+                            <input type="password" id="confirm-password">
+                        </div>
+                        <div class="form-footer">
+                            <button type="button" class="btn btn-primary">更新密码</button>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-group">
+                        <h3>系统偏好</h3>
+                        <div class="form-group">
+                            <label for="theme-select">主题颜色</label>
+                            <select id="theme-select">
+                                <option value="default">默认蓝色</option>
+                                <option value="green">绿色</option>
+                                <option value="red">红色</option>
+                                <option value="purple">紫色</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" checked> 启用桌面通知
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" checked> 自动保存更改 
+                            </label>
+                        </div>
+                        <div class="form-footer">
+                            <button type="button" class="btn btn-primary">保存设置</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div id="calendar"></div>
-  </div>
+ 
+    <!-- 添加/编辑学生模态框 -->
+    <div class="modal" id="studentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">添加学生信息</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <form id="studentForm">
+                <input type="hidden" id="studentId">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="studentNumber">学号 *</label>
+                        <input type="text" id="studentNumber" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="studentName">姓名 *</label>
+                        <input type="text" id="studentName" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="gender">性别</label>
+                        <select id="gender">
+                            <option value="男">男</option>
+                            <option value="女">女</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="age">年龄</label>
+                        <input type="number" id="age" min="16" max="30">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="major">专业 *</label>
+                        <input type="text" id="major" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="className">班级</label>
+                        <input type="text" id="className">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="phone">联系电话</label>
+                    <input type="tel" id="phone">
+                </div>
+                <div class="form-group">
+                                       <label for="email">电子邮箱</label>
+                    <input type="email" id="email">
+                </div>
+                <div class="form-footer">
+                    <button type="button" class="btn btn-danger" id="cancelBtn">取消</button>
+                    <button type="submit" class="btn btn-primary">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+ 
+    <!-- 页脚 -->
+    <footer class="footer">
+        <p>© 2025-5-28 马毓涛</p>
+    </footer>
+ 
+    <!-- JavaScript 部分 -->
+    <script>
+        // 导航切换功能 
+        document.querySelectorAll('.nav  a').forEach(link => {
+            link.addEventListener('click',  function(e) {
+                e.preventDefault(); 
+                
+                // 移除所有active类 
+                document.querySelectorAll('.nav  a').forEach(el => el.classList.remove('active')); 
+                document.querySelectorAll('.content-section').forEach(el  => el.classList.remove('active')); 
+                
+                // 添加active类到当前点击的链接 
+                this.classList.add('active'); 
+                
+                // 显示对应的内容区域 
+                const sectionId = this.getAttribute('data-section')  + '-section';
+                document.getElementById(sectionId).classList.add('active'); 
+            });
+        });
+ 
+        // 模态框功能 
+        const modal = document.getElementById('studentModal'); 
+        const openModalBtn = document.getElementById('openAddModal'); 
+        const closeModalBtn = document.querySelector('.close-modal'); 
+        const cancelBtn = document.getElementById('cancelBtn'); 
+        
+        // 打开模态框 
+        openModalBtn.addEventListener('click',  () => {
+            modal.style.display  = 'flex';
+            document.getElementById('modalTitle').textContent  = '添加学生信息';
+            document.getElementById('studentForm').reset(); 
+        });
+        
+        // 关闭模态框 
+        function closeModal() {
+            modal.style.display  = 'none';
+        }
+        
+        closeModalBtn.addEventListener('click',  closeModal);
+        cancelBtn.addEventListener('click',  closeModal);
+        
+        // 点击模态框外部关闭 
+        window.addEventListener('click',  (e) => {
+            if (e.target  === modal) {
+                closeModal();
+            }
+        });
+        
+        // 表单提交处理 
+        document.getElementById('studentForm').addEventListener('submit',  function(e) {
+            e.preventDefault(); 
+            
+            // 获取表单数据 
+            const studentData = {
+                id: document.getElementById('studentId').value, 
+                number: document.getElementById('studentNumber').value, 
+                name: document.getElementById('studentName').value, 
+                gender: document.getElementById('gender').value, 
+                age: document.getElementById('age').value, 
+                major: document.getElementById('major').value, 
+                className: document.getElementById('className').value, 
+                phone: document.getElementById('phone').value, 
+                email: document.getElementById('email').value  
+            };
+            
+            // 这里应该添加保存逻辑，比如发送到服务器或更新本地数据 
+            console.log(' 保存学生数据:', studentData);
+            
+            // 关闭模态框 
+            closeModal();
+            
+            // 刷新学生列表 
+            renderStudents();
+        });
+        
+        // 模拟学生数据 
+        let students = [
+            {
+                id: '1',
+                number: '20230001',
+                name: '张三',
+                gender: '男',
+                age: '20',
+                major: '计算机科学',
+                className: '计科2023-1班',
+                phone: '13800138001',
+                email: 'zhangsan@school.edu' 
+            },
+            {
+                id: '2',
+                number: '20230002',
+                name: '李四',
+                gender: '男',
+                age: '21',
+                major: '软件工程',
+                className: '软工2023-1班',
+                phone: '13800138002',
+                email: 'lisi@school.edu' 
+            },
+            {
+                id: '3',
+                number: '20230003',
+                name: '王五',
+                gender: '女',
+                age: '19',
+                major: '数据科学',
+                className: '数据2023-1班',
+                phone: '13800138003',
+                email: 'wangwu@school.edu' 
+            }
+        ];
+        
+        // 渲染学生表格 
+        function renderStudents() {
+            const tbody = document.getElementById('studentsTableBody'); 
+            tbody.innerHTML  = '';
+            
+            students.forEach(student  => {
+                const tr = document.createElement('tr'); 
+                tr.innerHTML  = `
+                    <td>${student.number}</td> 
+                    <td>${student.name}</td> 
+                    <td>${student.gender}</td> 
+                    <td>${student.age}</td> 
+                    <td>${student.major}</td> 
+                    <td>${student.className}</td> 
+                    <td>${student.phone}</td> 
+                    <td class="actions">
+                        <div class="action-icon edit" data-id="${student.id}"> 
+                            <i class="fas fa-edit"></i>
+                        </div>
+                        <div class="action-icon delete" data-id="${student.id}"> 
+                            <i class="fas fa-trash"></i>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr); 
+            });
+            
+            // 添加编辑和删除事件 
+            document.querySelectorAll('.action-icon.edit').forEach(icon  => {
+                icon.addEventListener('click',  function() {
+                    const studentId = this.getAttribute('data-id'); 
+                    editStudent(studentId);
+                });
+            });
+            
+            document.querySelectorAll('.action-icon.delete').forEach(icon  => {
+                icon.addEventListener('click',  function() {
+                    const studentId = this.getAttribute('data-id'); 
+                    if (confirm('确定要删除这个学生吗？')) {
+                        deleteStudent(studentId);
+                    }
+                });
+            });
+        }
+        
+        // 编辑学生 
+        function editStudent(id) {
+            const student = students.find(s  => s.id  === id);
+            if (student) {
+                document.getElementById('modalTitle').textContent  = '编辑学生信息';
+                document.getElementById('studentId').value  = student.id; 
+                document.getElementById('studentNumber').value  = student.number; 
+                document.getElementById('studentName').value  = student.name; 
+                document.getElementById('gender').value  = student.gender; 
+                document.getElementById('age').value  = student.age; 
+                document.getElementById('major').value  = student.major; 
+                document.getElementById('className').value  = student.className; 
+                document.getElementById('phone').value  = student.phone; 
+                document.getElementById('email').value  = student.email; 
+                
+                modal.style.display  = 'flex';
+            }
+        }
+        
+        // 删除学生 
+        function deleteStudent(id) {
+            students = students.filter(s  => s.id  !== id);
+            renderStudents();
+        }
+        
+        // 初始化页面 
+        document.addEventListener('DOMContentLoaded',  () => {
+            renderStudents();
+            
+            // 搜索功能 
+            document.querySelector('#students-section  .search-bar button').addEventListener('click', searchStudents);
+            document.getElementById('searchInput').addEventListener('keypress',  function(e) {
+                if (e.key  === 'Enter') {
+                    searchStudents();
+                }
+            });
+        });
+        
+        // 搜索学生 
+        function searchStudents() {
+            const keyword = document.getElementById('searchInput').value.toLowerCase(); 
+            if (!keyword) {
+                renderStudents();
+                return;
+            }
+            
+            const filtered = students.filter(s  => 
+                s.number.toLowerCase().includes(keyword)  || 
+                s.name.toLowerCase().includes(keyword)  ||
+                s.major.toLowerCase().includes(keyword) 
+            );
+            
+            const tbody = document.getElementById('studentsTableBody'); 
+            tbody.innerHTML  = '';
+            
+            filtered.forEach(student  => {
+                const tr = document.createElement('tr'); 
+                tr.innerHTML  = `
+                    <td>${student.number}</td> 
+                    <td>${student.name}</td> 
+                    <td>${student.gender}</td> 
+                    <td>${student.age}</td> 
+                    <td>${student.major}</td> 
+                    <td>${student.className}</td> 
+                    <td>${student.phone}</td> 
+                    <td class="actions">
+                        <div class="action-icon edit" data-id="${student.id}"> 
+                            <i class="fas fa-edit"></i>
+                        </div>
+                        <div class="action-icon delete" data-id="${student.id}"> 
+                            <i class="fas fa-trash"></i>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr); 
+            });
+        }
+    </script>
+<!-- 快速入门指南模态框 -->
+    <div class="guide-modal" id="guideModal">
+        <div class="guide-modal-content">
+            <h3>快速入门指南</h3>
+            <ol>
+                <li>使用顶部导航栏切换不同管理模块（首页/学生管理/课程管理等）</li>
+                <li>点击侧边栏「快捷操作」按钮可快速执行常用功能（添加学生、导出数据等）</li>
+                <li>首页功能卡片支持点击直接跳转至对应管理模块</li>
+                <li>各模块表格支持搜索过滤，点击操作图标可编辑/删除具体条目</li>
+            </ol>
+            <button class="btn btn-primary" style="margin-top: 1rem;" onclick="document.getElementById('guideModal').style.display='none'">关闭</button>
+        </div>
+    </div>
+    <script>
+        // 功能卡片点击跳转
+        document.querySelectorAll('.feature-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const sectionId = card.dataset.section;
+                document.querySelectorAll('.content-section').forEach(sec => sec.classList.remove('active'));
+                document.getElementById(sectionId).classList.add('active');
+                // 更新导航激活状态
+                document.querySelectorAll('.nav a').forEach(link => {
+                    link.classList.remove('active');
+                    if(link.dataset.section === sectionId.replace('-section','')) link.classList.add('active');
+                });
+            });
+        });
+        // 打开指南模态框
+        document.getElementById('openGuideModal').addEventListener('click', () => {
+            document.getElementById('guideModal').style.display = 'flex';
+        });
+        // 点击模态框外部关闭
+        document.getElementById('guideModal').addEventListener('click', (e) => {
+            if(e.target === e.currentTarget) {
+                e.currentTarget.style.display = 'none';
+            }
+        });
+        // 实时时钟功能
+function updateClock() {
+    const now = new Date();
+    const hours = now.getHours().toString().padStart(2, '0');
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    const seconds = now.getSeconds().toString().padStart(2, '0');
+    
+    // 格式化日期
+    const year = now.getFullYear();
+    const month = (now.getMonth() + 1).toString().padStart(2, '0');
+    const day = now.getDate().toString().padStart(2, '0');
+    const weekdays = ['日', '一', '二', '三', '四', '五', '六'];
+    const weekday = weekdays[now.getDay()];
+    
+    // 显示时钟
+    document.getElementById('realTimeClock').textContent = 
+        `${year}-${month}-${day} 周${weekday} ${hours}:${minutes}:${seconds}`;
+}
 
-  <!-- 记账本弹窗 -->
-  <div id="modal-account" class="modal modal-account">
-    <div class="modal-header">简单记账本 <span class="modal-close" onclick="closeModal('account')">&times;</span></div>
-    <form id="account-form">
-      <input type="number" id="money" placeholder="金额" required>
-      <input type="text" id="desc" placeholder="备注/用途" required>
-      <button type="submit">添加</button>
-    </form>
-    <ul id="account-list"></ul>
-    <div id="total"></div>
-  </div>
-
-<script>
-/* 悬浮弹窗控制 */
-function openModal(key){
-    document.getElementById('modal-'+key).style.display='block';
-    if(key==='calendar') renderCalendar();
-    if(key==='account') renderRecords();
-}
-function closeModal(key){
-    document.getElementById('modal-'+key).style.display='none';
-}
-/* 点击遮罩关闭，可选实现 */
-/*
-document.body.addEventListener('click',function(e){
-  if(e.target.classList.contains('modal'))e.target.style.display='none';
-},false);
-*/
-
-// 搜索引擎
-document.getElementById('searchForm').onsubmit = function(e) {
-    e.preventDefault();
-    var engine = document.getElementById('engineSelect').value;
-    var keyword = document.getElementById('keyword').value;
-    var url = '';
-    if (engine === 'quark') {
-        url = 'https://quark.sm.cn/s?q=' + encodeURIComponent(keyword);
-    } else if (engine === 'google') {
-        url = 'https://www.google.com/search?q=' + encodeURIComponent(keyword);
-    } else if (engine === 'baidu') {
-        url = 'https://www.baidu.com/s?wd=' + encodeURIComponent(keyword);
-    }
-    window.open(url, '_blank');
-}
-
-/* ----------------------- 记账本 ---------------------- */
-function loadRecords() {
-  return JSON.parse(localStorage.getItem('accountRecords')||'[]');
-}
-function saveRecords(arr) {
-  localStorage.setItem('accountRecords',JSON.stringify(arr));
-}
-function renderRecords() {
-  let arr=loadRecords(),ul=document.getElementById('account-list'),s='';
-  let total = 0;
-  arr.forEach((r,i)=>{
-    total+=Number(r.amount);
-    s+=`<li>
-      <span style="width:54px;display:inline-block;font-weight:bold;color:#38a1db;">¥${r.amount}</span>
-      <span style="flex:1;margin-left:8px;">${r.desc}</span>
-      <button onclick="delRecord(${i})">删</button>
-    </li>`;
-  });
-  ul.innerHTML=s;
-  document.getElementById('total').innerHTML=`<b>总计：</b>¥${total}`;
-}
-function delRecord(idx){
-  let arr=loadRecords();arr.splice(idx,1);saveRecords(arr);renderRecords();
-}
-if(document.getElementById('account-form')){
-document.getElementById('account-form').onsubmit=function(e){
-  e.preventDefault();
-  let val1=document.getElementById('money').value.trim(),
-      val2=document.getElementById('desc').value.trim();
-  if(!val1||!val2)return;
-  let arr=loadRecords();
-  arr.unshift({amount:val1,desc:val2,time:Date.now()});
-  saveRecords(arr);
-  this.reset();
-  renderRecords();
-}
-renderRecords();
-}
-/* ------------------------- 日历 ------------------------ */
-let cal_now = new Date();  // 当前显示日历的年月
-
-function renderCalendar() {
-  let now = cal_now; // 不用new Date()，否则是今天的月
-  let y = now.getFullYear(), m = now.getMonth();
-  let first = new Date(y,m,1).getDay();
-  let days = new Date(y,m+1,0).getDate();
-  let todayObj = new Date();
-  // 日历头
-  document.getElementById('calendar-title').textContent = y+"年"+("0"+(m+1)).slice(-2)+"月";
-  // 拼表格
-  let html='<table><tr><th>日</th><th>一</th><th>二</th><th>三</th><th>四</th><th>五</th><th>六</th></tr><tr>';
-  let day=1;
-  for(let i=0;i<first;i++)html+='<td></td>';
-  for(let i=first;i<7;i++){
-    let isToday = (y==todayObj.getFullYear()&&m==todayObj.getMonth()&&day==todayObj.getDate());
-    html+=`<td class='${isToday?"today":""}'>${day}</td>`;
-    day++;
-  }
-  html+='</tr>';
-  while(day<=days){
-    html+='<tr>';
-    for(let i=0;i<7 && day<=days;i++){
-      let isToday = (y==todayObj.getFullYear()&&m==todayObj.getMonth()&&day==todayObj.getDate());
-      html+=`<td class='${isToday?"today":""}'>${day}</td>`;
-      day++;
-    }
-    html+='</tr>';
-  }
-  html+='</table>';
-  document.getElementById('calendar').innerHTML=html;
-}
-function changeMonth(offset){
-  cal_now.setMonth(cal_now.getMonth()+offset);
-  renderCalendar();
-}
-/* ---------------------- 天气 北斗定位 ---------------------- */
-// 实际用法是浏览器 Geolocation（GPS/北斗等混合），调用天气API: 这里用和风天气演示（免费key：公网一天1000次）
-
-function setWeatherBar(txt){
-  document.getElementById('weatherbar').innerHTML = txt;
-}
-function getWeather(lat,lon){
-  // 你需要去 https://dev.qweather.com/ 注册获取自己的和风KEY
-  // 这里演示用 demo key (仅一小时100次~很容易被限制！请改成你自己的个人KEY)
-  let key="bd07173595ba45eca62e32e12d5067d7";
-  let url=`https://devapi.qweather.com/v7/weather/now?location=${lon},${lat}&key=${key}`; // 和风的经度,纬度
-  fetch(url).then(r=>r.json()).then(res=>{
-    if(res.code=="200" && res.now){
-      let now=res.now;
-      setWeatherBar(
-        `<b>天气</b>: <span class="temp">${now.temp}°C ${now.text}</span> <small>${now.windDir}风 ${now.windScale}级 | 湿度${now.humidity}%</small>`
-      );
-    }else{
-      setWeatherBar("天气获取失败");
-    }
-  }).catch(e=>{setWeatherBar("天气获取失败");});
-}
-
-if(navigator.geolocation){
-  setWeatherBar('正在定位获取天气...');
-  navigator.geolocation.getCurrentPosition(function(pos){
-    let lat=pos.coords.latitude,lon=pos.coords.longitude;
-    getWeather(lat,lon);
-  },function(err){
-    setWeatherBar("定位失败，无法获取天气");
-  });
-}else{
-  setWeatherBar("不支持定位，无法获取天气");
-}
-</script>
+// 初始化时钟并每秒更新
+updateClock();
+setInterval(updateClock, 100);//每100ms更新一次时钟
+    </script>
 </body>
 </html>
+                 
