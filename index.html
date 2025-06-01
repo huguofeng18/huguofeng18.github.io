@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>个人主页</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <style>
+    body{background:#f7f8fa;font-family:'Segoe UI',Tahoma,sans-serif;}
+    h1{color:#2d3240;text-align:center;margin-top:2.5rem;margin-bottom:1.5rem;}
+    .search-box{margin:auto;width:max-content;margin-top:2rem;}
+    input,select{height:2.5rem;font-size:16px;border-radius:1.2rem;padding:0 1rem;border:1px solid #ccc;}
+    input[type="text"]{width:14rem;}
+    input[type="submit"]{width:5rem;background:#38a1db;color:#fff;border:none;margin-left:.5rem;cursor:pointer;}
+    select{margin-right:1rem;}
+    /* 悬浮按钮 & 弹窗 */
+    .fab {
+      position:fixed;background:#38a1db;color:#fff;border:none;width:56px;height:56px;border-radius:50%;box-shadow:0 2px 8px #0002;cursor:pointer;z-index:20;display:flex;align-items:center;justify-content:center;font-size:1.9rem;transition:box-shadow .2s;
+    }
+    .fab:hover{box-shadow: 0 5px 16px #0004;}
+    .fab-calendar{right:24px;bottom:32px;}
+    .fab-account{right:24px;top:32px;}
+    .modal {
+      position:fixed;right:90px;bottom:90px;width:350px;max-width:93vw;
+      background:#fff;box-shadow:0 2px 12px #3334;border-radius:16px;z-index:100;text-align:left;padding:0 22px 18px 22px;display:none;animation:modalShow .2s;
+    }
+    .modal-account{right:90px;top:90px;bottom:auto;}
+    .modal-header{
+      padding:1rem 0 .8rem 0;font-size:20px;font-weight:bold;color:#2d3240;display:flex;justify-content:space-between;align-items:center;
+    }
+    .modal-close{font-size:22px;cursor:pointer;font-weight:normal;color:#888;}
+    @keyframes modalShow{from{transform:scale(.8);opacity:0;}to{transform:scale(1);opacity:1;}}
+    /* 记账本内容 */
+    #account-form{display:flex;gap:8px;margin-bottom:10px;}
+    #account-form input[type="number"]{width:70px;}
+    #account-form input[type="text"]{width:100px;}
+    #account-form button{padding:0 12px;}
+    #account-list{padding:0;list-style:none;}
+    #account-list li{margin:6px 0;padding:4px 0;font-size:15px;display:flex;align-items:center;justify-content:space-between;}
+    #account-list button{background:#e74c3c;color:#fff;border:none;border-radius:7px;padding:1px 10px;font-size:14px;cursor:pointer;}
+    #total{margin:7px 0 4px 0;color:#222;}
+    /* 日历样式 */
+    #calendar table{width:100%;font-size:15px;text-align:center;border-collapse:collapse;}
+    #calendar th{color:#555;}
+    #calendar td{padding:6px 0;border-radius:6px;cursor:pointer;transition:background .15s;}
+    #calendar td.today{background:#1E90FF1A;color:#1957a4;font-weight:bold;}
+    #calendar td:hover{background:#38a1db16;}
+    .calendar-controls{display:flex;justify-content:space-between;align-items:center;margin:7px 0;}
+    /* 天气简洁样式 */
+    .weather-bar {height:34px;line-height:34px;padding:0 13px;background:#38a1db;color:#fff;border-radius:16px;display:inline-block;font-size:16px;margin-bottom:.8rem;margin-left:auto;margin-right:auto;}
+    .weather-bar small{font-size:13px;opacity:.7;}
+    .weather-bar .temp{font-weight:bold;padding:0 .3em;}
+    @media (max-width:600px){
+      h1{margin-top:1rem;}
+      .modal,.modal-account{width:97vw;right:2vw;}
+      .fab-account{right:18px !important;}
+      .fab-calendar{right:18px !important;}
+      .modal{padding:0 .9em 1em .9em;}
+    }
+  </style>
+</head>
+<body>
+  <h1>我的智能主页</h1>
+  <div id="weatherbar" class="weather-bar">天气加载中...</div>
+  <div class="search-box">
+      <form id="searchForm" target="_blank">
+          <select id="engineSelect">
+              <option value="quark">夸克</option>
+              <option value="google">谷歌</option>
+              <option value="baidu">百度</option>
+          </select>
+          <input type="text" id="keyword" placeholder="输入关键词..." required>
+          <input type="submit" value="搜索">
+      </form>
+  </div>
+
+  <!-- 悬浮按钮 -->
+  <button class="fab fab-calendar" title="打开日历" onclick="openModal('calendar')">📅</button>
+  <button class="fab fab-account" title="打开记账本" onclick="openModal('account')">💰</button>
+
+  <!-- 日历弹窗 -->
+  <div id="modal-calendar" class="modal">
+    <div class="modal-header">本月日历 <span class="modal-close" onclick="closeModal('calendar')">&times;</span></div>
+    <div class="calendar-controls">
+      <button onclick="changeMonth(-1)" style="font-size:18px;">&#8592;</button>
+      <span id="calendar-title"></span>
+      <button onclick="changeMonth(1)" style="font-size:18px;">&#8594;</button>
+    </div>
+    <div id="calendar"></div>
+  </div>
+
+  <!-- 记账本弹窗 -->
+  <div id="modal-account" class="modal modal-account">
+    <div class="modal-header">简单记账本 <span class="modal-close" onclick="closeModal('account')">&times;</span></div>
+    <form id="account-form">
+      <input type="number" id="money" placeholder="金额" required>
+      <input type="text" id="desc" placeholder="备注/用途" required>
+      <button type="submit">添加</button>
+    </form>
+    <ul id="account-list"></ul>
+    <div id="total"></div>
+  </div>
+
+<script>
+/* 悬浮弹窗控制 */
+function openModal(key){
+    document.getElementById('modal-'+key).style.display='block';
+    if(key==='calendar') renderCalendar();
+    if(key==='account') renderRecords();
+}
+function closeModal(key){
+    document.getElementById('modal-'+key).style.display='none';
+}
+/* 点击遮罩关闭，可选实现 */
+/*
+document.body.addEventListener('click',function(e){
+  if(e.target.classList.contains('modal'))e.target.style.display='none';
+},false);
+*/
+
+// 搜索引擎
+document.getElementById('searchForm').onsubmit = function(e) {
+    e.preventDefault();
+    var engine = document.getElementById('engineSelect').value;
+    var keyword = document.getElementById('keyword').value;
+    var url = '';
+    if (engine === 'quark') {
+        url = 'https://quark.sm.cn/s?q=' + encodeURIComponent(keyword);
+    } else if (engine === 'google') {
+        url = 'https://www.google.com/search?q=' + encodeURIComponent(keyword);
+    } else if (engine === 'baidu') {
+        url = 'https://www.baidu.com/s?wd=' + encodeURIComponent(keyword);
+    }
+    window.open(url, '_blank');
+}
+
+/* ----------------------- 记账本 ---------------------- */
+function loadRecords() {
+  return JSON.parse(localStorage.getItem('accountRecords')||'[]');
+}
+function saveRecords(arr) {
+  localStorage.setItem('accountRecords',JSON.stringify(arr));
+}
+function renderRecords() {
+  let arr=loadRecords(),ul=document.getElementById('account-list'),s='';
+  let total = 0;
+  arr.forEach((r,i)=>{
+    total+=Number(r.amount);
+    s+=`<li>
+      <span style="width:54px;display:inline-block;font-weight:bold;color:#38a1db;">¥${r.amount}</span>
+      <span style="flex:1;margin-left:8px;">${r.desc}</span>
+      <button onclick="delRecord(${i})">删</button>
+    </li>`;
+  });
+  ul.innerHTML=s;
+  document.getElementById('total').innerHTML=`<b>总计：</b>¥${total}`;
+}
+function delRecord(idx){
+  let arr=loadRecords();arr.splice(idx,1);saveRecords(arr);renderRecords();
+}
+if(document.getElementById('account-form')){
+document.getElementById('account-form').onsubmit=function(e){
+  e.preventDefault();
+  let val1=document.getElementById('money').value.trim(),
+      val2=document.getElementById('desc').value.trim();
+  if(!val1||!val2)return;
+  let arr=loadRecords();
+  arr.unshift({amount:val1,desc:val2,time:Date.now()});
+  saveRecords(arr);
+  this.reset();
+  renderRecords();
+}
+renderRecords();
+}
+/* ------------------------- 日历 ------------------------ */
+let cal_now = new Date();  // 当前显示日历的年月
+
+function renderCalendar() {
+  let now = cal_now; // 不用new Date()，否则是今天的月
+  let y = now.getFullYear(), m = now.getMonth();
+  let first = new Date(y,m,1).getDay();
+  let days = new Date(y,m+1,0).getDate();
+  let todayObj = new Date();
+  // 日历头
+  document.getElementById('calendar-title').textContent = y+"年"+("0"+(m+1)).slice(-2)+"月";
+  // 拼表格
+  let html='<table><tr><th>日</th><th>一</th><th>二</th><th>三</th><th>四</th><th>五</th><th>六</th></tr><tr>';
+  let day=1;
+  for(let i=0;i<first;i++)html+='<td></td>';
+  for(let i=first;i<7;i++){
+    let isToday = (y==todayObj.getFullYear()&&m==todayObj.getMonth()&&day==todayObj.getDate());
+    html+=`<td class='${isToday?"today":""}'>${day}</td>`;
+    day++;
+  }
+  html+='</tr>';
+  while(day<=days){
+    html+='<tr>';
+    for(let i=0;i<7 && day<=days;i++){
+      let isToday = (y==todayObj.getFullYear()&&m==todayObj.getMonth()&&day==todayObj.getDate());
+      html+=`<td class='${isToday?"today":""}'>${day}</td>`;
+      day++;
+    }
+    html+='</tr>';
+  }
+  html+='</table>';
+  document.getElementById('calendar').innerHTML=html;
+}
+function changeMonth(offset){
+  cal_now.setMonth(cal_now.getMonth()+offset);
+  renderCalendar();
+}
+/* ---------------------- 天气 北斗定位 ---------------------- */
+// 实际用法是浏览器 Geolocation（GPS/北斗等混合），调用天气API: 这里用和风天气演示（免费key：公网一天1000次）
+
+function setWeatherBar(txt){
+  document.getElementById('weatherbar').innerHTML = txt;
+}
+function getWeather(lat,lon){
+  // 你需要去 https://dev.qweather.com/ 注册获取自己的和风KEY
+  // 这里演示用 demo key (仅一小时100次~很容易被限制！请改成你自己的个人KEY)
+  let key="bd07173595ba45eca62e32e12d5067d7";
+  let url=`https://devapi.qweather.com/v7/weather/now?location=${lon},${lat}&key=${key}`; // 和风的经度,纬度
+  fetch(url).then(r=>r.json()).then(res=>{
+    if(res.code=="200" && res.now){
+      let now=res.now;
+      setWeatherBar(
+        `<b>天气</b>: <span class="temp">${now.temp}°C ${now.text}</span> <small>${now.windDir}风 ${now.windScale}级 | 湿度${now.humidity}%</small>`
+      );
+    }else{
+      setWeatherBar("天气获取失败");
+    }
+  }).catch(e=>{setWeatherBar("天气获取失败");});
+}
+
+if(navigator.geolocation){
+  setWeatherBar('正在定位获取天气...');
+  navigator.geolocation.getCurrentPosition(function(pos){
+    let lat=pos.coords.latitude,lon=pos.coords.longitude;
+    getWeather(lat,lon);
+  },function(err){
+    setWeatherBar("定位失败，无法获取天气");
+  });
+}else{
+  setWeatherBar("不支持定位，无法获取天气");
+}
+</script>
+</body>
+</html>
